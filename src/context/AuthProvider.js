@@ -1,25 +1,22 @@
 import { useContext, useEffect, createContext, useState } from "react";
-import api from "../utils/api";
-
 
 const AuthContext = createContext(undefined)
 
 
-export const AuthProvider = ({children}) => {
+export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(Object())
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   const getAuthStatus = async () => {
 
-    // check local storage for token
     try {
-      const response = await fetch("http://localhost:3000/user", {credentials: 'include'})
+      const response = await fetch("http://localhost:3000/user", { credentials: 'include' })
       const json = await response.json()
 
       console.log(response)
 
-      if (response.status == 200) {
+      if (response.status === 200) {
         console.log(json.data)
         setUser(json.data)
         setIsAuthenticated(true)
@@ -34,18 +31,18 @@ export const AuthProvider = ({children}) => {
     }
   }
 
-  useEffect(()=> {
+  useEffect(() => {
     getAuthStatus();
   }, [])
 
 
   const logIn = () => {
-      window.location.href = `http://localhost:3000/auth/google/callback`
+    window.location.href = `http://localhost:3000/auth/google/callback`
   };
 
   const logout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/auth/logout" , {method: 'POST', credentials: 'include'});
+      const response = await fetch("http://localhost:3000/auth/logout", { method: 'POST', credentials: 'include' });
       console.log(response.headers)
       if (response.status === 200) {
         setIsAuthenticated(false);
@@ -57,9 +54,9 @@ export const AuthProvider = ({children}) => {
     }
   };
 
-   if (loading) {
-    return <p>loading...</p>;
-  }
+  // if (loading) {
+  //   return <p>loading...</p>;
+  // }
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, logIn, logout }}>
