@@ -1,8 +1,6 @@
 import { useContext, useEffect, createContext, useState } from "react";
-import { useNavigate, useNavigation } from "react-router-dom";
 
 const AuthContext = createContext(undefined)
-
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -56,18 +54,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
-
-
-
-
   return (
     <AuthContext.Provider value={{ isAuthenticated, loadingUser, user, logIn, logout }}>
       {children}
     </AuthContext.Provider>
   );
-
-
 }
 
 export const useAuth = () => {
