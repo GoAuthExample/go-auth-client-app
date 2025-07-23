@@ -1,4 +1,5 @@
 import { useContext, useEffect, createContext, useState } from "react";
+import { useNavigate, useNavigation } from "react-router-dom";
 
 const AuthContext = createContext(undefined)
 
@@ -6,15 +7,20 @@ const AuthContext = createContext(undefined)
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(Object())
-  // const [loading, setLoading] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(false);
+
+
+  useEffect(() => {
+    getAuthStatus();
+  }, [])
+
 
   const getAuthStatus = async () => {
+    setLoadingUser(true)
 
     try {
       const response = await fetch("http://localhost:3000/user", { credentials: 'include' })
       const json = await response.json()
-
-      console.log(response)
 
       if (response.status === 200) {
         console.log(json.data)
@@ -29,12 +35,8 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false)
       setUser(false)
     }
+    setLoadingUser(false)
   }
-
-  useEffect(() => {
-    getAuthStatus();
-  }, [])
-
 
   const logIn = () => {
     window.location.href = `http://localhost:3000/auth/google/callback`
@@ -43,10 +45,10 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       const response = await fetch("http://localhost:3000/auth/logout", { method: 'POST', credentials: 'include' });
-      console.log(response.headers)
       if (response.status === 200) {
         setIsAuthenticated(false);
         setUser(null);
+        window.location.href="/"
       }
     }
     catch (error) {
@@ -54,12 +56,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // if (loading) {
-  //   return <p>loading...</p>;
-  // }
+
+
+
+
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, logIn, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, loadingUser, user, logIn, logout }}>
       {children}
     </AuthContext.Provider>
   );
